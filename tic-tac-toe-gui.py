@@ -159,10 +159,10 @@ class PlateauMorpion(tk.Tk): # la classe hérite de la classe Tk de tkinter qui 
         cadre_grille = tk.Frame(master= self)
         cadre_grille.pack()
         # on crée les cases qui sont en fait des boutons. Ici c'est du 3x3 
-        for ligne in range(self._jeu.Taille_Plateau):
+        for ligne in range(self._jeu.taille_plateau):
             self.rowconfigure(ligne, weight=1, minsize =50)
             self.columnconfigure(ligne , weight=1, minsize =50)
-            for col in range(self._jeu.Taille_Plateau):
+            for col in range(self._jeu.taille_plateau):
                 bouton = tk.Button(
                     master = cadre_grille,
                     text = "",
@@ -228,7 +228,8 @@ class PlateauMorpion(tk.Tk): # la classe hérite de la classe Tk de tkinter qui 
         
 def main():
     """crée le palteau de jeu et lance la boucle"""
-    board = PlateauMorpion()
+    jeu = Jeu()
+    board = PlateauMorpion(jeu)
     board.mainloop()
 
 if __name__ == "__main__":
