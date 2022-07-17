@@ -130,6 +130,15 @@ class PlateauMorpion(tk.Tk): # la classe hérite de la classe Tk de tkinter qui 
         self._creation_de_la_grille()
         self.geometry('400x400')
 
+    def _creer_menu(self):
+        barre_menu = tk.Menu(master=self)
+        self.config(menu=barre_menu)
+        file_menu = tk.Menu(master=barre_menu)
+        file_menu.add_command(label="Jouer Encore", command=self.reset_board)
+        file_menu.add_separator()
+        file_menu.add_command(label="Sortir", command=quit)
+        barre_menu.add_cascade(label="Fichier", menu=file_menu)
+
     def _affichage_du_plateau(self):
         """creation du plateau"""
         # On crée un objet Frame pour contenir l'affichage du jeu:
@@ -194,14 +203,28 @@ class PlateauMorpion(tk.Tk): # la classe hérite de la classe Tk de tkinter qui 
                 msg = f"C'est le tour de {self._jeu.joueur_en_jeu.marque}"
                 self._mise_a_jour_affichage(msg)
 
-    def _mise_a_jour_bouton(self):
-        ...
+    def _mise_a_jour_bouton(self, bouton_cliqué):
+        bouton_cliqué.config(text = self._jeu.joueur_en_jeu.marque)
+        bouton_cliqué.config(text = self._jeu.joueur_en_jeu.couleur)
 
-    def _mise_a_jour_affichage(self):
-        ...
+
+    def _mise_a_jour_affichage(self, msg, color= "black"):
+        self.display["text"] = msg
+        self.display['fg'] = color
 
     def _rougir_cases(self):
-        ...
+        for bouton, coordonées in self._cells.items():
+            if coordonées in self._jeu.combo_vainqueur:
+                bouton.config(highlightbackground="red")
+
+    def reset_board(self):
+        """Reset the game's board to play again."""
+        self._jeu.reset()
+        self._mise_a_jour_affichage(msg="Pret?")
+        for bouton in self._cells.keys():
+            bouton.config(highlightbackground="lightblue")
+            bouton.config(text="")
+            bouton.config(fg="black")
         
 def main():
     """crée le palteau de jeu et lance la boucle"""
