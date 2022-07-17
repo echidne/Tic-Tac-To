@@ -171,6 +171,9 @@ class PlateauMorpion(tk.Tk): # la classe hérite de la classe Tk de tkinter qui 
                     pady = 2,
                     sticky = "nsew"
                 )
+                bouton.bind("<ButtonPress-1>", self.coup_joueurs)
+                bouton.grid(row=ligne, column=col, padx=5, pady=5, sticky="nsew")
+
     def coup_joueurs(self, evenement):
         """ ceci va permettre de gérer les coups des joueurs sur le plateau """
         bouton_cliqué = evenement.widget
