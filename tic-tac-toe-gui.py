@@ -47,7 +47,7 @@ class Jeu:
         self.taille_plateau = taille_plateau
         self.joueur_en_jeu = next(self._joueurs)
         self.combo_vainqueur = []
-        self._coups_joués = []
+        self._coups_possibles = []
         self._gagnant = False
         self._combo_gagnant = []
         self._preparation_plateau()
@@ -60,7 +60,7 @@ class Jeu:
             [Coup(ligne,col) for col in range(self.taille_plateau)]
             for ligne in range(self.taille_plateau)
         ]
-        self._combo_gagnant = self._obtenir_combo_gagnant() # on apelle la focntion qui calcule les alignements gagnants
+        self._combo_gagnant = self._obtenir_combo_gagnant() # on apelle la fonction qui calcule les alignements gagnants
     
     def _obtenir_combo_gagnant(self):
         lignes=  [
@@ -79,16 +79,16 @@ class Jeu:
     def verification_coup(self, coup):
         """ vérifie si le coup est valide. Retourne vrai si oui """
         ligne, col = coup.ligne, coup.col # on récupère la position
-        coup_pas_joué = self._coups_joués[ligne][col].marque == "" # on vérifie si la position est vide
+        coup_pas_joué = self._coups_possibles[ligne][col].marque == "" # on vérifie si la position est vide
         pas_de_gagnant = not self._gagnant # vérfie si le jeu a un gagnant
         return pas_de_gagnant and coup_pas_joué # S'il n'y avait pas de gagnant et si la position est valide alors le coup est valide
     
     def jouer(self, coup):
         """ On joue le coup et on vérifie si c'est gagnant"""
         ligne, col = coup.ligne, coup.col # on récupère la position
-        self._coups_joués[ligne][col] = coup
+        self._coups_possibles[ligne][col] = coup
         for combo in self._combo_gagnant:
-            resultats = set(self._coups_joués[i][j].marque for i,j in combo) # on effectue un set sur une expression génratrice pour récupérer toutes les marques dans la combo gagnante actuelle
+            resultats = set(self._coups_possibles[i][j].marque for i,j in combo) # on effectue un set sur une expression génratrice pour récupérer toutes les marques dans la combo gagnante actuelle
             est_gagnant = (len(resultats) ==1) and ("" not in resultats) # booléen quidétermine si le coup joué est gagnant ou pas
             if est_gagnant:
                 self._gagnant = True # si le coup est gagnant alors on a un joueur gagnant
@@ -102,12 +102,12 @@ class Jeu:
     def pat(self):
         """ retourne vrai si il ne peut plus avoir de gagnant"""
         pas_de_gagnant = not self._gagnant
-        coup_jouable = all(coup.marque for ligne in self._coups_joués for coup in ligne) # vrai s'il n'y a pas une cellule vide dans les  coups joués
+        coup_jouable = all(coup.marque for ligne in self._coups_possibles for coup in ligne) # vrai s'il n'y a pas une cellule vide dans les  coups joués
         return pas_de_gagnant and coup_jouable
 
     def reset(self):
         """ remet le jeu à l'état initial"""
-        for ligne, contenu_ligne in enumerate(self._coups_joués):
+        for ligne, contenu_ligne in enumerate(self._coups_possibles):
             for col, _ in enumerate(contenu_ligne):
                 contenu_ligne[col] = Coup(ligne, col) # comme la marque est par défaut "" on reset toutes les cases en cases vides
         self._gagnant = False
@@ -126,6 +126,7 @@ class PlateauMorpion(tk.Tk): # la classe hérite de la classe Tk de tkinter qui 
         self.title("Un jeu de Morpion") # le titre de la fenètre
         self._cells ={}  # ceci va initilaiser les boutons
         self._jeu =  jeu
+        self._creer_menu()
         self._affichage_du_plateau()
         self._creation_de_la_grille()
         self.geometry('400x400')
@@ -205,12 +206,12 @@ class PlateauMorpion(tk.Tk): # la classe hérite de la classe Tk de tkinter qui 
 
     def _mise_a_jour_bouton(self, bouton_cliqué):
         bouton_cliqué.config(text = self._jeu.joueur_en_jeu.marque)
-        bouton_cliqué.config(text = self._jeu.joueur_en_jeu.couleur)
+        bouton_cliqué.config(fg = self._jeu.joueur_en_jeu.couleur)
 
 
     def _mise_a_jour_affichage(self, msg, color= "black"):
-        self.display["text"] = msg
-        self.display['fg'] = color
+        self.affichage["text"] = msg
+        self.affichage['fg'] = color
 
     def _rougir_cases(self):
         for bouton, coordonées in self._cells.items():
