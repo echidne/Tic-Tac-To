@@ -68,9 +68,9 @@ class Jeu:
             for ligne in self._coups_possibles
         ]
         cols= [list(col) for col in zip(*lignes)]
-        prem_diag = [col[i] for i, col in enumerate(lignes)]
+        prem_diag = [ligne[i] for i, ligne in enumerate(lignes)]
         sec_diag = [col[j] for j, col in enumerate(reversed(cols))]
-        return lignes + cols + [prem_diag + sec_diag]
+        return lignes + cols + [prem_diag, sec_diag]
 
     def inversion_joueur(self):
         """ retourne le joueur suivant """
@@ -88,7 +88,7 @@ class Jeu:
         ligne, col = coup.ligne, coup.col # on récupère la position
         self._coups_possibles[ligne][col] = coup
         for combo in self._combo_gagnant:
-            resultats = set(self._coups_possibles[i][j].marque for i,j in combo) # on effectue un set sur une expression génratrice pour récupérer toutes les marques dans la combo gagnante actuelle
+            resultats = set(self._coups_possibles[n][m].marque for n,m in combo) # on effectue un set sur une expression génratrice pour récupérer toutes les marques dans la combo gagnante actuelle
             est_gagnant = (len(resultats) ==1) and ("" not in resultats) # booléen quidétermine si le coup joué est gagnant ou pas
             if est_gagnant:
                 self._gagnant = True # si le coup est gagnant alors on a un joueur gagnant
@@ -235,5 +235,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
-        
